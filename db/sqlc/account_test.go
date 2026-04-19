@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestCreateAccount(t *testing.T){
+func CreateRandomAccount(t *testing.T)(Accounts,CreateAccountParams){
 	arg := CreateAccountParams{
 		Owner: util.RandomOwner(), 
 		Balance: util.RandomAmount(),
@@ -17,6 +17,13 @@ func TestCreateAccount(t *testing.T){
 
 	account,err := testQueries.CreateAccount(context.Background(),arg)
 	require.NoError(t,err)
+	return account,arg
+	
+}
+
+func TestCreateAccount(t *testing.T){
+	account,arg := CreateRandomAccount(t)
+
 	require.NotEmpty(t,account)
 	require.Equal(t,arg.Owner,account.Owner)
 	require.Equal(t,arg.Balance,account.Balance)
@@ -24,5 +31,38 @@ func TestCreateAccount(t *testing.T){
 
 	require.NotZero(t,account.ID)
 	require.NotZero(t,account.CreatedAt)
+}
 
+func TestGetAccount(t *testing.T){
+	account1,_ := CreateRandomAccount(t)
+	account2,err := testQueries.GetAccount(context.Background(),account1.ID)
+
+	require.NoError(t,err)
+	require.NotEmpty(t,account2)
+	require.Equal(t,account1.Owner,account2.Owner)
+	require.Equal(t,account1.Balance,account2.Balance)
+	require.Equal(t,account1.Currency,account2.Currency)
+
+}
+
+func TestUpdateAccount(t *testing.T){
+	account1,_ := CreateRandomAccount(t)
+	account2,err := testQueries.GetAccount(context.Background(),account1.ID)
+
+	require.NoError(t,err)
+	require.NotEmpty(t,account2)
+	require.Equal(t,account1.Owner,account2.Owner)
+	require.Equal(t,account1.Balance,account2.Balance)
+	require.Equal(t,account1.Currency,account2.Currency)
+
+	arg := UpdateAccountParams{
+		ID: account2.ID,
+		Balance: util.RandomAmount(),
+	}
+
+	account3,err := testQueries.UpdateAccount(context.Background(),arg)
+
+	require.NoError(t,err)
+	require.NotEmpty(t,account3)
+	require.Equal(t,account3.Balance,arg.Balance)
 }
