@@ -1,0 +1,36 @@
+# Binaries and build outputs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+coverage.out
+*.coverprofile
+
+# Build directories
+/bin/
+/obj/
+
+# Dependency directories
+/vendor/
+/Godeps/
+
+# Go workspace files
+*.lock
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+*.swp
+*~
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.local
