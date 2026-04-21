@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func CreateRandomAccount(t *testing.T)(Accounts,CreateAccountParams){
+func CreateRandomAccount(t *testing.T)(Account,CreateAccountParams){
 	arg := CreateAccountParams{
 		Owner: util.RandomOwner(), 
 		Balance: util.RandomAmount(),

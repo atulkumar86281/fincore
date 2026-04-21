@@ -10,7 +10,7 @@ import (
 )
 
 const createTransfer = `-- name: CreateTransfer :one
-INSERT INTO transfers (
+INSERT INTO transfer (
     from_account_id,
     to_account_id,
     amount
@@ -26,9 +26,9 @@ type CreateTransferParams struct {
 	Amount        int64 `json:"amount"`
 }
 
-func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfers, error) {
+func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error) {
 	row := q.db.QueryRowContext(ctx, createTransfer, arg.FromAccountID, arg.ToAccountID, arg.Amount)
-	var i Transfers
+	var i Transfer
 	err := row.Scan(
 		&i.ID,
 		&i.FromAccountID,
@@ -40,7 +40,7 @@ func (q *Queries) CreateTransfer(ctx context.Context, arg CreateTransferParams) 
 }
 
 const deleteTransfer = `-- name: DeleteTransfer :exec
-DELETE FROM transfers
+DELETE FROM transfer
 WHERE id = $1
 `
 
@@ -50,14 +50,14 @@ func (q *Queries) DeleteTransfer(ctx context.Context, id int64) error {
 }
 
 const getTransfer = `-- name: GetTransfer :one
-SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers
+SELECT id, from_account_id, to_account_id, amount, created_at FROM transfer
 WHERE id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfers, error) {
+func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfer, error) {
 	row := q.db.QueryRowContext(ctx, getTransfer, id)
-	var i Transfers
+	var i Transfer
 	err := row.Scan(
 		&i.ID,
 		&i.FromAccountID,
@@ -69,7 +69,7 @@ func (q *Queries) GetTransfer(ctx context.Context, id int64) (Transfers, error) 
 }
 
 const listTransfers = `-- name: ListTransfers :many
-SELECT id, from_account_id, to_account_id, amount, created_at FROM transfers
+SELECT id, from_account_id, to_account_id, amount, created_at FROM transfer
 WHERE from_account_id = $1
    OR to_account_id = $1
 ORDER BY id
@@ -83,15 +83,15 @@ type ListTransfersParams struct {
 	Offset        int32 `json:"offset"`
 }
 
-func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfers, error) {
+func (q *Queries) ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error) {
 	rows, err := q.db.QueryContext(ctx, listTransfers, arg.FromAccountID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Transfers
+	var items []Transfer
 	for rows.Next() {
-		var i Transfers
+		var i Transfer
 		if err := rows.Scan(
 			&i.ID,
 			&i.FromAccountID,

@@ -1,5 +1,5 @@
 -- name: CreateEntry :one
-INSERT INTO entries (
+INSERT INTO entry (
     account_id,
     amount
 ) VALUES (
@@ -8,18 +8,18 @@ INSERT INTO entries (
 RETURNING *;
 
 -- name: GetEntry :one
-SELECT * FROM entries
+SELECT * FROM entry
 WHERE id = $1
 LIMIT 1;
 
 -- name: ListEntries :many
-SELECT * FROM entries
+SELECT * FROM entry
 WHERE account_id = $1
 ORDER BY id
 LIMIT $2
 OFFSET $3;
 
 -- name: DeleteEntry :exec
-DELETE FROM entries
+DELETE FROM entry
 WHERE id = $1;
 
