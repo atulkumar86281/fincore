@@ -14,4 +14,13 @@ sqlc:
 	sqlc generate
 test:
 	go test -v -cover ./...
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc
+mysql:
+	docker run --name mysql8 -p 3306:3306 \
+	-e MYSQL_ROOT_PASSWORD=pass \
+	-e MYSQL_DATABASE=simple_bank \
+	-d mysql:8
+mysqlmigrateup:
+	migrate -path db/migrate \
+	-database "mysql://root:pass@tcp(localhost:3306)/simple_bank" \
+	-verbose up
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup
