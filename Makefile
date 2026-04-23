@@ -23,4 +23,6 @@ mysqlmigrateup:
 	migrate -path db/migrate \
 	-database "mysql://root:pass@tcp(localhost:3306)/simple_bank" \
 	-verbose up
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup
+server:
+	go run main.go
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server

@@ -29,7 +29,6 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error ) error{
 	}
 
 	q := New(tx)
-
 	err = fn(q)
 
 	if err != nil{
@@ -38,7 +37,6 @@ func (store *Store) execTx(ctx context.Context, fn func(*Queries) error ) error{
 		}
 		return err
 	}
-
 	return tx.Commit()
 }
 
@@ -56,7 +54,6 @@ type TrasnferTxResult struct{
 	ToEntry Entry `json:"to_entry"`
 }
 
-// var txnKey = struct{}{}
 
 func (store *Store) TransferTx(ctx context.Context, transferTxArg TransferTxParams) (TrasnferTxResult,error){
 	var result TrasnferTxResult
