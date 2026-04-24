@@ -7,14 +7,19 @@ import (
 )
 
 
-type Store struct{
+type Store interface{
+	Querier
+	TransferTx(ctx context.Context, transferTxArg TransferTxParams) (TrasnferTxResult,error)
+}
+
+type SqlStore struct{
 	*Queries
 	db *sql.DB
 }
 
-func NewStore(db *sql.DB) *Store{
+func NewStore(db *sql.DB) Store{
 
-	return &Store{
+	return &SqlStore{
 		db : db,
 		Queries: New(db),
 
@@ -22,7 +27,7 @@ func NewStore(db *sql.DB) *Store{
 }
 
 
-func (store *Store) execTx(ctx context.Context, fn func(*Queries) error ) error{
+func (store *SqlStore) execTx(ctx context.Context, fn func(*Queries) error ) error{
 	tx, err := store.db.BeginTx(ctx,nil)
 	if err != nil{
 		return err
@@ -55,7 +60,7 @@ type TrasnferTxResult struct{
 }
 
 
-func (store *Store) TransferTx(ctx context.Context, transferTxArg TransferTxParams) (TrasnferTxResult,error){
+func (store *SqlStore) TransferTx(ctx context.Context, transferTxArg TransferTxParams) (TrasnferTxResult,error){
 	var result TrasnferTxResult
 
 	err := store.execTx(ctx,func(q *Queries)error{

@@ -25,4 +25,6 @@ mysqlmigrateup:
 	-verbose up
 server:
 	go run main.go
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server
+mock:
+	mockgen -package mockDb -destination db/mock/store.go github/atulkumar0001/Bank/db/sqlc Store
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server mock
