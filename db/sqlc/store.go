@@ -52,11 +52,11 @@ type TransferTxParams struct{
 }
 
 type TrasnferTxResult struct{
-	Transfer Transfer `json:"transfer"`
-	FromAccount Account `json:"from_account_id"`
-	ToAccount Account	`json:"to_account_id"`
-	FromEntry Entry `json:"from_entry"`
-	ToEntry Entry `json:"to_entry"`
+	Transfer Transfers `json:"transfer"`
+	FromAccount Accounts `json:"from_account_id"`
+	ToAccount Accounts	`json:"to_account_id"`
+	FromEntry Entries `json:"from_entry"`
+	ToEntry Entries `json:"to_entry"`
 }
 
 
@@ -128,7 +128,7 @@ func addMoney(
 	amount1 int64,
 	accountId2 int64,
 	amount2 int64,
-)(account1 Account, account2 Account, err error){
+)(account1 Accounts, account2 Accounts, err error){
 	account1, err = q.AddAccountBalance(ctx,AddAccountBalanceParams{
 		ID: accountId1,
 		Amount: amount1,

@@ -1,5 +1,5 @@
 -- name: CreateTransfer :one
-INSERT INTO transfer (
+INSERT INTO transfers (
     from_account_id,
     to_account_id,
     amount
@@ -9,12 +9,12 @@ INSERT INTO transfer (
 RETURNING *;
 
 -- name: GetTransfer :one
-SELECT * FROM transfer
+SELECT * FROM transfers
 WHERE id = $1
 LIMIT 1;
 
 -- name: ListTransfers :many
-SELECT * FROM transfer
+SELECT * FROM transfers
 WHERE from_account_id = $1
    OR to_account_id = $1
 ORDER BY id
@@ -22,5 +22,5 @@ LIMIT $2
 OFFSET $3;
 
 -- name: DeleteTransfer :exec
-DELETE FROM transfer
+DELETE FROM transfers
 WHERE id = $1;

@@ -3,11 +3,15 @@ postgres:
 createdb:
 	docker exec -it postgres12 createdb --username=root --owner=root simple_bank
 newmigrate:
-	migrate create -ext sql -dir db/migrate -seq init_schema
+	migrate create -ext sql -dir db/migrate -seq add_user
 migrateup: 
 	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/simple_bank?sslmode=disable" -verbose up
+migrateup1: 
+	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/simple_bank?sslmode=disable" -verbose up 1
 migratedown:
 	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/simple_bank?sslmode=disable" -verbose down
+migratedown1:
+	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/simple_bank?sslmode=disable" -verbose down 1
 dropdb:
 	docker exec -it postgres12 dropdb simple_bank
 sqlc:
@@ -27,4 +31,13 @@ server:
 	go run main.go
 mock:
 	mockgen -package mockDb -destination db/mock/store.go github/atulkumar0001/Bank/db/sqlc Store
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server mock
+newsetup:
+	docker exec -it postgres12 dropdb --if-exists simple_bank
+	docker exec -it postgres12 createdb --username=root --owner=root simple_bank
+	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/simple_bank?sslmode=disable" -verbose up
+	sqlc generate
+	mockgen -package mockDb -destination db/mock/store.go github/atulkumar0001/Bank/db/sqlc Store
+	go test -v -cover ./...
+	go run main.go
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server mock newsetup migrateup1 migratedown1

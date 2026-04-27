@@ -37,8 +37,8 @@ func TestGetAccountApi(t *testing.T){
 	require.Equal(t,http.StatusOK,recorder.Code)
 }
 
-func randomAccount() db.Account {
-	return db.Account{
+func randomAccount() db.Accounts {
+	return db.Accounts{
 		ID: util.RandomInt(1,1000),
 		Owner: util.RandomOwner(),
 		Balance: util.RandomAmount(),

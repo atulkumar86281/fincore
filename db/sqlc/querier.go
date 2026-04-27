@@ -9,21 +9,21 @@ import (
 )
 
 type Querier interface {
-	AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Account, error)
-	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
-	CreateEntry(ctx context.Context, arg CreateEntryParams) (Entry, error)
-	CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfer, error)
+	AddAccountBalance(ctx context.Context, arg AddAccountBalanceParams) (Accounts, error)
+	CreateAccount(ctx context.Context, arg CreateAccountParams) (Accounts, error)
+	CreateEntry(ctx context.Context, arg CreateEntryParams) (Entries, error)
+	CreateTransfer(ctx context.Context, arg CreateTransferParams) (Transfers, error)
 	DeleteAccount(ctx context.Context, id int64) (int64, error)
 	DeleteEntry(ctx context.Context, id int64) error
 	DeleteTransfer(ctx context.Context, id int64) error
-	GetAccount(ctx context.Context, id int64) (Account, error)
-	GetAccountForUpdate(ctx context.Context, id int64) (Account, error)
-	GetEntry(ctx context.Context, id int64) (Entry, error)
-	GetTransfer(ctx context.Context, id int64) (Transfer, error)
-	ListAccount(ctx context.Context, arg ListAccountParams) ([]Account, error)
-	ListEntries(ctx context.Context, arg ListEntriesParams) ([]Entry, error)
-	ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfer, error)
-	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
+	GetAccount(ctx context.Context, id int64) (Accounts, error)
+	GetAccountForUpdate(ctx context.Context, id int64) (Accounts, error)
+	GetEntry(ctx context.Context, id int64) (Entries, error)
+	GetTransfer(ctx context.Context, id int64) (Transfers, error)
+	ListAccount(ctx context.Context, arg ListAccountParams) ([]Accounts, error)
+	ListEntries(ctx context.Context, arg ListEntriesParams) ([]Entries, error)
+	ListTransfers(ctx context.Context, arg ListTransfersParams) ([]Transfers, error)
+	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Accounts, error)
 }
 
 var _ Querier = (*Queries)(nil)
