@@ -39,5 +39,8 @@ newsetup:
 	mockgen -package mockDb -destination db/mock/store.go github/atulkumar0001/Bank/db/sqlc Store
 	go test -v -cover ./...
 	go run main.go
+sync:
+	sqlc generate
+	mockgen -package mockDb -destination db/mock/store.go github/atulkumar0001/Bank/db/sqlc Store
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server mock newsetup migrateup1 migratedown1
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server mock newsetup migrateup1 migratedown1 sync
