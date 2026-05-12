@@ -2,8 +2,10 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	db "github/atulkumar0001/Bank/db/sqlc"
+	"github/atulkumar0001/Bank/token"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -22,8 +24,16 @@ func (server *Server) createAccount(ctx *gin.Context){
 		return
 	}
 
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	if req.Owner != authPayload.Username{
+		err := errors.New("Account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized,errorResponse(err))
+		return
+	}
+
 	arg := db.CreateAccountParams{
-		Owner: req.Owner,
+		Owner: authPayload.Username,
 		Currency: req.Currency,
 		Balance: 0,
 	}
@@ -65,6 +75,14 @@ func (server *Server) getAccount(ctx *gin.Context){
 		ctx.JSON(http.StatusInternalServerError,errorResponse(err))
 		return
 	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	if acc.Owner != authPayload.Username{
+		err := errors.New("Account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized,errorResponse(err))
+		return
+	}
 	
 	ctx.JSON(http.StatusOK,acc)
 }
@@ -80,12 +98,14 @@ func (server *Server) listAccount(ctx *gin.Context){
 		ctx.JSON(http.StatusBadRequest,errorResponse(err))
 		return
 	}
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
 
-	arg := db.ListAccountParams{
+	arg := db.ListAccountsParams{
+		Owner: authPayload.Username,
 		Limit: req.PageSize,
 		Offset: (req.PageId-1) * req.PageSize,
 	}
-	acc,err := server.store.ListAccount(ctx,arg)
+	acc,err := server.store.ListAccounts(ctx,arg)
 	if err != nil{
 		if err == sql.ErrNoRows{
 			ctx.JSON(http.StatusNotFound,acc)
@@ -109,7 +129,27 @@ func (server *Server) DeleteAccount(ctx *gin.Context){
 		return
 	}
 
-	_, err := server.store.DeleteAccount(ctx, req.ID)
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	acc,err := server.store.GetAccount(ctx,req.ID)
+
+	if err != nil{
+		if err == sql.ErrNoRows{
+			ctx.JSON(http.StatusNotFound,errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError,errorResponse(err))
+		return
+	}
+
+	if authPayload.Username != acc.Owner{
+		err := errors.New("Account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized,errorResponse(err))
+		return
+	}
+
+
+	_, err = server.store.DeleteAccount(ctx, req.ID)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			ctx.JSON(http.StatusNotFound, errorResponse(err))
@@ -133,6 +173,26 @@ func (server *Server) UpdateAccount(ctx *gin.Context){
 		ctx.JSON(http.StatusBadRequest,errorResponse(err))
 		return
 	}
+
+	authPayload := ctx.MustGet(authorizationPayloadKey).(*token.Payload)
+
+	accInfo,err := server.store.GetAccount(ctx,req.ID)
+
+	if err != nil{
+		if err == sql.ErrNoRows{
+			ctx.JSON(http.StatusNotFound,errorResponse(err))
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError,errorResponse(err))
+		return
+	}
+
+	if authPayload.Username != accInfo.Owner{
+		err := errors.New("Account doesn't belong to the authenticated user")
+		ctx.JSON(http.StatusUnauthorized,errorResponse(err))
+		return
+	}
+
 
 	fmt.Println("REQ ID:", req.ID)
 

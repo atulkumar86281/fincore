@@ -67,3 +67,36 @@ func TestUpdateAccount(t *testing.T){
 	require.NotEmpty(t,account3)
 	require.Equal(t,account3.Balance,arg.Balance)
 }
+
+func TestDeleteAccount(t *testing.T) {
+	account1,_ := CreateRandomAccount(t)
+	id,err := testQueries.DeleteAccount(context.Background(), account1.ID)
+	require.NoError(t, err)
+	require.NotZero(t,id)
+
+	account2, err := testQueries.GetAccount(context.Background(), account1.ID)
+	require.Error(t, err)
+	require.Empty(t, account2)
+}
+
+func TestListAccounts(t *testing.T) {
+	var lastAccount Accounts
+	for i := 0; i < 10; i++ {
+		lastAccount,_ = CreateRandomAccount(t)
+	}
+
+	arg := ListAccountsParams{
+		Owner:  lastAccount.Owner,
+		Limit:  5,
+		Offset: 0,
+	}
+
+	accounts, err := testQueries.ListAccounts(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, accounts)
+
+	for _, account := range accounts {
+		require.NotEmpty(t, account)
+		require.Equal(t, lastAccount.Owner, account.Owner)
+	}
+}
