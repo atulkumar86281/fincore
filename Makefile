@@ -5,7 +5,7 @@ createdb:
 newmigrate:
 	migrate create -ext sql -dir db/migrate -seq add_user
 migrateup: 
-	migrate -path  db/migrate -database postgresql://root:pass@localhost:5432/bank?sslmode=disable" -verbose up
+	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/bank?sslmode=disable" -verbose up
 migrateup1: 
 	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/bank?sslmode=disable" -verbose up 1
 migratedown:
