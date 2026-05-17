@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: bank-api
-          image: 665911299079.dkr.ecr.ap-southeast-2.amazonaws.com/bank@sha256:latest
+          image: 665911299079.dkr.ecr.ap-southeast-2.amazonaws.com/bank:latest
           ports:
             - containerPort: 8080
