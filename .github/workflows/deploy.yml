@@ -12,6 +12,12 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v2
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v1
+        with:
+          version: "v1.31.0"
+        id: install
         
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -35,3 +41,12 @@ jobs:
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
           docker push -a $ECR_REGISTRY/$ECR_REPOSITORY
+
+      - name: Update kube config
+        run: aws eks update-kubeconfig --name bank-cluster --region ap-southeast-2
+
+      - name: Deploy image to Amazon EKS
+        run: |
+          kubectl apply -f eks/aws-auth.yaml
+          kubectl apply -f eks/deployment.yaml
+          kubectl apply -f eks/service.yaml

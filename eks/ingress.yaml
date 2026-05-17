@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: bank-ingress
+spec:
+  rules:
+  - host: "a5584c66fa8694bb8a95d2ab2930e72d-699106103.ap-southeast-2.elb.amazonaws.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: bank-service
+            port:
+              number: 80
