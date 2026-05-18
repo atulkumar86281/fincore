@@ -13,6 +13,7 @@ type Config struct{
 	ServerAddress string `mapstructure:"SERVER_ADDRESS"`
 	TokenAssymetricKey string `mapstructure:"TOKEN_ASSYMETRIC_KEY"`
 	AcccessTokenDuration time.Duration `mapstructure:"ACCESS_TOKEN_EXPIRY_DURATION"`
+	RefreshTokenDuration time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
 }
 
 func LoadConfig(path string)(config Config, err error){
