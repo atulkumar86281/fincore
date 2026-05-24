@@ -1,3 +1,5 @@
+DB_URL=postgresql://root:pass@localhost:5432/bank?sslmode=disable
+
 postgres:
 	docker run --name postgres12 --network bank-network -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=pass -d postgres:12-alpine
 createdb:
@@ -5,13 +7,13 @@ createdb:
 newmigrate:
 	migrate create -ext sql -dir db/migrate -seq add_user
 migrateup: 
-	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/bank?sslmode=disable" -verbose up
+	migrate -path  db/migrate -database "$(DB_URL)" -verbose up
 migrateup1: 
-	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/bank?sslmode=disable" -verbose up 1
+	migrate -path  db/migrate -database "$(DB_URL)" -verbose up 1
 migratedown:
-	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/bank?sslmode=disable" -verbose down
+	migrate -path  db/migrate -database "$(DB_URL)" -verbose down
 migratedown1:
-	migrate -path  db/migrate -database "postgresql://root:pass@localhost:5432/bank?sslmode=disable" -verbose down 1
+	migrate -path  db/migrate -database "$(DB_URL)" -verbose down 1
 dropdb:
 	docker exec -it postgres12 dropdb bank
 sqlc:
@@ -42,5 +44,12 @@ newsetup:
 sync:
 	sqlc generate
 	mockgen -package mockDb -destination db/mock/store.go github/atulkumar0001/Bank/db/sqlc Store
+proto:
+	rm -f pb/*.go
+	protoc --proto_path=proto --go_out=pb --go_opt=paths=source_relative \
+	--go-grpc_out=pb --go-grpc_opt=paths=source_relative \
+	proto/*.proto
+evans:
+	evans --host localhost --port 9090 -r repl
 
-.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server mock newsetup migrateup1 migratedown1 sync
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc mysql mysqlmigrateup server mock newsetup migrateup1 migratedown1 sync proto evans
