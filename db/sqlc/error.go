@@ -1,10 +1,11 @@
 package db
 
 import (
+	"database/sql"
 	"errors"
 
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/lib/pq"
 )
 
 const (
@@ -12,9 +13,9 @@ const (
 	UniqueViolation     = "23505"
 )
 
-var ErrRecordNotFound = pgx.ErrNoRows
+var ErrRecordNotFound = sql.ErrNoRows
 
-var ErrUniqueViolation = &pgconn.PgError{
+var ErrUniqueViolation = &pq.Error{
 	Code: UniqueViolation,
 }
 
@@ -22,6 +23,10 @@ func ErrorCode(err error) string {
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
 		return pgErr.Code
+	}
+	var pqErr *pq.Error
+	if errors.As(err, &pqErr) {
+		return string(pqErr.Code)
 	}
 	return ""
 }
