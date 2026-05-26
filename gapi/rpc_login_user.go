@@ -42,12 +42,13 @@ func (server *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest)(*
 		return	nil,status.Error(codes.Internal, "Something went wrong")		
 	}
 
+	mtdt := server.extractMetadata(ctx)
 	session, err := server.store.CreateSession(ctx,db.CreateSessionParams{
 		ID: refreshTokenPayload.ID,
 		Username: req.Username,
 		RefreshToken: refreshToken,
-		UserAgent: "",
-		ClientIp: "",
+		UserAgent: mtdt.UserAgent,
+		ClientIp: mtdt.ClientIp,
 		IsBlocked: false,
 		ExpiresAt: refreshTokenPayload.ExpiredAt,
 	})
